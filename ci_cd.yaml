@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+        
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest
+        
+    - name: Run Basic Tests
+      run: |
+        # Create a dummy test to ensure imports work
+        echo "def test_imports(): import src.api" > test_sanity.py
+        pytest test_sanity.py
+        
+    - name: Build Docker Image
+      run: docker build -t network-anomaly-detector .
+      
+    # Optional: Push to DockerHub (Uncomment if you have credentials)
+    # - name: Login to DockerHub
+    #   uses: docker/login-action@v1 
+    #   with: ...
